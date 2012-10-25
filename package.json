@@ -1,0 +1,13 @@
+{
+    "name": "Verdict",
+    "description": "Decision engine for ",
+    "version": "0.0.1",
+    "author": "",
+    "dependencies": {
+    	"async": "",
+    	"underscore": ""
+    },
+    "devDependencies": {
+    	"nodeUnit": ""
+    }
+}
