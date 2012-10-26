@@ -4,10 +4,10 @@
     "version": "0.0.1",
     "author": "",
     "dependencies": {
-    	"async": "",
-    	"underscore": ""
+    	"async": "0.1.22",
+    	"underscore": "1.4.2"
     },
     "devDependencies": {
-    	"nodeUnit": ""
+    	"nodeunit": "0.7.3"
     }
 }
