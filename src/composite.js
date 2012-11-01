@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var async = require('async');
-var debugger = require('./debugger');
+var debug = require('./debug');
 
 var composite = exports = module.exports = {};
 
@@ -20,7 +20,7 @@ var template = {
 	all: {
 		evaluate: function(callback) {
 			var self = this;
-			debugger.addEvent({
+			debug.addEvent({
 				event: 'Beginning evaluation of "AND" block'
 			});
 			async.detectSeries(this.children,
@@ -29,7 +29,7 @@ var template = {
 						if (err) return callback(err);
 						if (!result) {
 							iteratorCallback(true);
-							debugger.addEvent({
+							debug.addEvent({
 								event: '"AND" block evaluated to false'
 							});
 							callback(null, false);
@@ -40,7 +40,7 @@ var template = {
 				},
 				function(result) {
 					if (typeof result === 'undefined') {
-						debugger.addEvent({
+						debug.addEvent({
 							event: '"AND" block evaluated to true'
 						});
 						callback(null, true);
@@ -66,7 +66,7 @@ var template = {
 	any: {
 		evaluate: function(callback) {
 			var self = this;
-			debugger.addEvent({
+			debug.addEvent({
 				event: 'Beginning evaluation of "OR" block'
 			});
 			async.detectSeries(this.children,
@@ -75,7 +75,7 @@ var template = {
 						if (err) return callback(err);
 						if (result) {
 							iteratorCallback(true);
-							debugger.addEvent({
+							debug.addEvent({
 								event: '"OR" block evaluated to true'
 							});
 							callback(null, true);
@@ -86,7 +86,7 @@ var template = {
 				},
 				function(result) {
 					if (typeof result === 'undefined') {
-						debugger.addEvent({
+						debug.addEvent({
 							event: '"OR" block evaluated to false'
 						});
 						callback(null, false);
@@ -121,7 +121,7 @@ var template = {
 						if (err) return callback(err);
 						if (result) {
 							iteratorCallback(true);
-							debugger.addEvent({
+							debug.addEvent({
 								event: '"NONE" block evaluated to false'
 							});
 							callback(null, false);
@@ -132,7 +132,7 @@ var template = {
 				},
 				function(result) {
 					if (typeof result === 'undefined') {
-						debugger.addEvent({
+						debug.addEvent({
 							event: '"NONE" block evaluated to true'
 						});
 						callback(null, true);

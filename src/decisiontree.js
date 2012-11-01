@@ -2,7 +2,7 @@
 var verdict = require('verdict');
 var async = require('async');
 var _ = require('underscore');
-var debugger = require('./debugger');
+var debug = require('./debug');
 
 exports = module.exports = DecisionTree;
 
@@ -41,7 +41,7 @@ DecisionTree.prototype.evaluateCondition = function(callback) {
 DecisionTree.prototype.getLeafNode = function(cb) {
     var path = [];
     return (function getLeaf(callback, self) {
-        debugger.addEvent({
+        debug.addEvent({
             event: 'Evaluated segment (' + this.nodeName + ')'
         });
         self.evaluateCondition(function(err, pass) {
@@ -65,7 +65,7 @@ DecisionTree.prototype.getLeafNode = function(cb) {
             },
             function(res) {
                 if (typeof res === 'undefined') {
-                    debugger.addEvent({
+                    debug.addEvent({
                         event: 'Branch evaluated to false'
                     });
                     path.pop();

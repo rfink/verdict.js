@@ -1,5 +1,5 @@
 var ComparisonParameter = require('./comparisonparameter');
-var debugger = require('./debugger');
+var debug = require('./debug');
 
 /**
  * Interface defining properties && public methods for the comparison objects
@@ -65,7 +65,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value == self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' = ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -90,7 +90,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value != self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' != ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -114,7 +114,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value === self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' === ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -138,7 +138,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value !== self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' !== ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -162,7 +162,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value < self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' < ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -186,7 +186,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value > self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' > ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -210,7 +210,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value <= self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' <= ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -234,7 +234,7 @@ var template = {
 			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value >= self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' >= ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -265,7 +265,7 @@ var template = {
 						break;
 					}
 				}
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' IN ( ' + JSON.stringify(self.configValue) + ' ) - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -296,7 +296,7 @@ var template = {
 						break;
 					}
 				}
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' NOT IN ( ' + JSON.stringify(self.configValue) + ' ) - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -321,7 +321,7 @@ var template = {
 				if (err) return callback(err);
 				if (typeof value !== 'string') return callback(new Error('Value is not a string, context key ( ' + self.contextKey + ' )'));
 				var result = (value.indexOf(self.configValue) !== -1);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' CONTAINS ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -346,7 +346,7 @@ var template = {
 				if (err) return callback(err);
 				if (typeof value !== 'string') return callback(new Error('Value is not a string, context key ( ' + self.contextKey + ' )'));
 				var result = (value.indexOf(self.configValue) === -1);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' NOT CONTAINS ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -373,7 +373,7 @@ var template = {
 					return callback(new Error('Must be a string or array'));
 				}
 				var result = (value.length == self.configValue);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' IS LENGTH ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -400,7 +400,7 @@ var template = {
 					return callback(new Error('Key or value is not a string'));
 				}
 				var result = (new RegExp(self.configValue, 'i')).test(value);
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' MATCHES REGEX ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -427,7 +427,7 @@ var template = {
 					return callback(new Error('Min and Max must both be defined'));
 				}
 				var result = value >= self.params.min && value <= self.params.max;
-				debugger.addEvent({
+				debug.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' IN RANGE (' + self.params.min + ', ' + self.params.max + ') - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -463,7 +463,7 @@ var template = {
 	
 	truth: {
 		evaluate: function(callback) {
-			debugger.addEvent({
+			debug.addEvent({
 				event: 'Called always true comparison - result (true)'
 			});
 			return callback(null, true);
