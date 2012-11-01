@@ -2,6 +2,7 @@
 var verdict = require('verdict');
 var async = require('async');
 var _ = require('underscore');
+var debugger = require('./debugger');
 
 exports = module.exports = DecisionTree;
 
@@ -10,15 +11,13 @@ exports = module.exports = DecisionTree;
  * @param  {verdict.comparisonInterface} (internal)
  * @return {DecisionTree}
  */
-function DecisionTree(Condition, debug) {
+function DecisionTree(condition) {
+    if (!(this instanceof DecisionTree)) return new DecisionTree(condition, debug);
     this.children = [];
     this.parent = null;
     this.segmentName = null;
     this.segmentId = null;
-    this.Condition = Condition;
-    this.debug = debug || {
-        events: []
-    };
+    this.condition = condition;
 }
 
 /**
@@ -27,8 +26,8 @@ function DecisionTree(Condition, debug) {
  * @return {mixed}
  */
 DecisionTree.prototype.evaluateCondition = function(callback) {
-    if (this.Condition === null || typeof this.Condition === 'undefined') return callback(null, true);
-    this.Condition.evaluate(function(err, pass) {
+    if (this.condition === null || typeof this.condition === 'undefined') return callback(null, true);
+    this.condition.evaluate(function(err, pass) {
         if (err) return callback(err);
         return callback(null, pass);
     });
@@ -42,7 +41,7 @@ DecisionTree.prototype.evaluateCondition = function(callback) {
 DecisionTree.prototype.getLeafNode = function(cb) {
     var path = [];
     return (function getLeaf(callback, self) {
-        self.debug.events.push({
+        debugger.addEvent({
             event: 'Evaluated segment (' + this.nodeName + ')'
         });
         self.evaluateCondition(function(err, pass) {
@@ -66,7 +65,7 @@ DecisionTree.prototype.getLeafNode = function(cb) {
             },
             function(res) {
                 if (typeof res === 'undefined') {
-                    self.debug.events.push({
+                    debugger.addEvent({
                         event: 'Branch evaluated to false'
                     });
                     path.pop();
@@ -146,7 +145,7 @@ DecisionTree.prototype.getSegmentById = function(segmentId) {
  */
 DecisionTree.prototype.copy = function() {
     var T = new this.constructor;
-    T.Condition = this.Condition;
+    T.condition = this.condition;
     this.children.forEach(function(child) {
         T.children.push(child.copy());
     });
@@ -178,7 +177,7 @@ DecisionTree.prototype.getPathSql = function(callback) {
         if (err) return callback(err);
         var sqlArr = [];
         obj.path.forEach(function(node) {
-            sqlArr.push(node.Condition.toSql());
+            sqlArr.push(node.condition.toSql());
         });
         return callback(null, sqlArr.join(' AND '));
     });
@@ -194,7 +193,7 @@ DecisionTree.prototype.getPathMongoQuery = function(callback) {
         if (err) return callback(err);
         var andObj = {};
         obj.path.forEach(function(node) {
-            _(andObj).extend(node.Condition.toMongoQuery());
+            _(andObj).extend(node.condition.toMongoQuery());
         });
         return callback(null, andObj);
     });
@@ -221,7 +220,7 @@ DecisionTree.prototype.mongoQueryFromSegment = function(segmentId, keyPrefix) {
             var par = node.parent;
             for (var i = 0, len = par.children.length; i < len; ++i) {
                 var child = par.children[i];
-                var q = child.Condition.toMongoQuery(keyPrefix);
+                var q = child.condition.toMongoQuery(keyPrefix);
                 var objLen = _.keys(q).length;
                 if (objLen) {
                     if (child.segmentId != node.segmentId) {
@@ -235,9 +234,7 @@ DecisionTree.prototype.mongoQueryFromSegment = function(segmentId, keyPrefix) {
             reverseTraverse(par, keyPrefix);
         }
     })(seg.node);
-    var obj = {
-        '$and': qArr
-    };
+    var obj = { '$and': qArr };
     if (inverseArr.length) obj['$nor'] = inverseArr;
     return obj;
 };
@@ -266,7 +263,7 @@ DecisionTree.prototype.breadthFirstToArray = function() {
  * @return {DecisionTree}
  */
 DecisionTree.factory = function(dataObject, contextObject) {
-    var Dec = new DecisionTree(verdict.factory(contextObject, dataObject.Condition));
+    var Dec = new DecisionTree(verdict.factory(contextObject, dataObject.condition));
     Dec.segmentName = dataObject.segmentName;
     if (dataObject.segmentId) Dec.segmentId = dataObject.segmentId;
     // Recurse with factory, if needed
@@ -289,6 +286,6 @@ DecisionTree.prototype.toJSON = function() {
         children: this.children,
         segmentName: this.segmentName,
         segmentId: this.segmentId,
-        Condition: this.Condition
+        condition: this.condition
     };
 };

@@ -2,7 +2,7 @@ var _ = require('underscore');
 
 exports = module.exports = ComparisonParameter;
 
-/*
+/**
 
 	Example config:
 	new ComparisonParameter({

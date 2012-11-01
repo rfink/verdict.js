@@ -1,23 +1,21 @@
 var ComparisonParameter = require('./comparisonparameter');
+var debugger = require('./debugger');
 
 /**
  * Interface defining properties && public methods for the comparison objects
- * @param verdict.context Context
+ * @param verdict.context context
  * @param string contextKey
  * @param mixed configValue
  * @return comparison
  */
-var comparisonInterface = function(Context, contextKey, configValue, debug) {
-	this.Context = Context;
+var comparisonInterface = function(context, contextKey, configValue) {
+	this.context = context;
 	this.contextKey = contextKey;
 	this.contextValue;
 	this.configValue = configValue;
 	this.params = {};
 	this.nodeType = '';
 	this.nodeDriver = '';
-	this.debug = debug || {
-		events: []
-	};
 };
 
 /**
@@ -42,8 +40,8 @@ var quote = function(input) {
 	}
 };
 
-var mongoFormatValue = function(input, Context, propertyName) {
-	var prop = Context.getProperty(propertyName);
+var mongoFormatValue = function(input, context, propertyName) {
+	var prop = context.getProperty(propertyName);
 	if (!prop) return null;
 	if (prop.options.type === Number) {
 		return parseFloat(input);
@@ -64,10 +62,10 @@ var template = {
 	equals: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value == self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' = ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -75,11 +73,11 @@ var template = {
 			
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' = ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' = ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = mongoFormatValue(this.configValue, this.Context, this.contextKey);
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = mongoFormatValue(this.configValue, this.context, this.contextKey);
 			return obj;
 		},
 		display: '=',
@@ -89,21 +87,21 @@ var template = {
 	notEquals: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value != self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' != ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' != ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' != ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$ne': mongoFormatValue(this.configValue, this.Context, this.contextKey)};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$ne': mongoFormatValue(this.configValue, this.context, this.contextKey)};
 			return obj;
 		},
 		display: '!=',
@@ -113,21 +111,21 @@ var template = {
 	identical: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value === self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' === ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' = BINARY ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' = BINARY ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = this.configValue;
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = this.configValue;
 			return obj;
 		},
 		display: '==',
@@ -137,21 +135,21 @@ var template = {
 	notIdentical: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value !== self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' !== ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' != BINARY ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' != BINARY ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$ne': this.configValue};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$ne': this.configValue};
 			return obj;
 		},
 		display: '!==',
@@ -161,21 +159,21 @@ var template = {
 	lessThan: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value < self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' < ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' < ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' < ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$lt': mongoFormatValue(this.configValue, this.Context, this.contextKey)};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$lt': mongoFormatValue(this.configValue, this.context, this.contextKey)};
 			return obj;
 		},
 		display: '<',
@@ -185,21 +183,21 @@ var template = {
 	greaterThan: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value > self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' > ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' > ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' > ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$gt': mongoFormatValue(this.configValue, this.Context, this.contextKey)};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$gt': mongoFormatValue(this.configValue, this.context, this.contextKey)};
 			return obj;
 		},
 		display: '>',
@@ -209,21 +207,21 @@ var template = {
 	lessThanEqualTo: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value <= self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' <= ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' <= ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' <= ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$lte': mongoFormatValue(this.configValue, this.Context, this.contextKey)};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$lte': mongoFormatValue(this.configValue, this.context, this.contextKey)};
 			return obj;
 		},
 		display: '<=',
@@ -233,21 +231,21 @@ var template = {
 	greaterThanEqualTo: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				var result = (value >= self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' >= ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' >= ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' >= ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$gte': mongoFormatValue(this.configValue, this.Context, this.contextKey)};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$gte': mongoFormatValue(this.configValue, this.context, this.contextKey)};
 			return obj;
 		},
 		display: '>=',
@@ -257,7 +255,7 @@ var template = {
 	contains: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				if (!value.hasOwnProperty('length')) return callback(new Error('Configuration must be an array or object'));
 				var result = false;
@@ -267,7 +265,7 @@ var template = {
 						break;
 					}
 				}
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' IN ( ' + JSON.stringify(self.configValue) + ' ) - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -278,7 +276,7 @@ var template = {
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$in': this.configValue};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$in': this.configValue};
 			return obj;
 		},
 		display: 'List Has',
@@ -288,7 +286,7 @@ var template = {
 	notContains: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				if (!value.hasOwnProperty('length')) return callback(new Error('Configuration must be an array or object'));
 				var result = true;
@@ -298,7 +296,7 @@ var template = {
 						break;
 					}
 				}
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' NOT IN ( ' + JSON.stringify(self.configValue) + ' ) - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
@@ -309,7 +307,7 @@ var template = {
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$nin': this.configValue};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$nin': this.configValue};
 			return obj;
 		},
 		display: 'List Not Has',
@@ -319,22 +317,22 @@ var template = {
 	stringContains: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				if (typeof value !== 'string') return callback(new Error('Value is not a string, context key ( ' + self.contextKey + ' )'));
 				var result = (value.indexOf(self.configValue) !== -1);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' CONTAINS ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' LIKE ' + quote('%' + this.configValue + '%');
+			return this.context.getBottomKey(this.contextKey) + ' LIKE ' + quote('%' + this.configValue + '%');
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$regex': regExEscape(this.configValue), '$options': 'i'};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$regex': regExEscape(this.configValue), '$options': 'i'};
 			return obj;
 		},
 		display: 'Contains',
@@ -344,22 +342,22 @@ var template = {
 	stringNotContains: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				if (typeof value !== 'string') return callback(new Error('Value is not a string, context key ( ' + self.contextKey + ' )'));
 				var result = (value.indexOf(self.configValue) === -1);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' NOT CONTAINS ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' NOT LIKE ' + quote('%' + this.configValue + '%');
+			return this.context.getBottomKey(this.contextKey) + ' NOT LIKE ' + quote('%' + this.configValue + '%');
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$not': new RegExp(regExEscape(this.configValue), 'i')};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$not': new RegExp(regExEscape(this.configValue), 'i')};
 			return obj;
 		},
 		display: 'Not Contains',
@@ -369,24 +367,24 @@ var template = {
 	lengthOf: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				if (typeof value !== 'string' && !Array.isArray(value)) {
 					return callback(new Error('Must be a string or array'));
 				}
 				var result = (value.length == self.configValue);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' IS LENGTH ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return 'CHAR_LENGTH(' + this.Context.getBottomKey(this.contextKey) + ') = ' + quote(this.configValue);
+			return 'CHAR_LENGTH(' + this.context.getBottomKey(this.contextKey) + ') = ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$size': this.configValue};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$size': this.configValue};
 			return obj;
 		},
 		display: 'Has Length',
@@ -396,24 +394,24 @@ var template = {
 	regEx: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				if (typeof self.configValue !== 'string' || typeof value !== 'string') {
 					return callback(new Error('Key or value is not a string'));
 				}
 				var result = (new RegExp(self.configValue, 'i')).test(value);
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' MATCHES REGEX ' + self.configValue + ' - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' REGEX ' + quote(this.configValue);
+			return this.context.getBottomKey(this.contextKey) + ' REGEX ' + quote(this.configValue);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {};
-			obj[keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.')] = {'$regex': this.configValue, '$options': 'i'};
+			obj[keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.')] = {'$regex': this.configValue, '$options': 'i'};
 			return obj;
 		},
 		display: 'Reg Ex',
@@ -423,26 +421,26 @@ var template = {
 	range: {
 		evaluate: function(callback) {
 			var self = this;
-			this.Context.getValue(this.contextKey, function(err, value) {
+			this.context.getValue(this.contextKey, function(err, value) {
 				if (err) return callback(err);
 				if (typeof self.params.min === 'undefined' || typeof self.params.max === 'undefined') {
 					return callback(new Error('Min and Max must both be defined'));
 				}
 				var result = value >= self.params.min && value <= self.params.max;
-				self.debug.events.push({
+				debugger.addEvent({
 					event: 'Condition: (' + self.contextKey + ') ' + value + ' IN RANGE (' + self.params.min + ', ' + self.params.max + ') - result (' + (result ? 'true' : 'false') + ')'
 				});
 				return callback(null, result);
 			});
 		},
 		toSql: function() {
-			return this.Context.getBottomKey(this.contextKey) + ' BETWEEN ' + quote(self.params.min) + ' AND ' + quote(self.params.max);
+			return this.context.getBottomKey(this.contextKey) + ' BETWEEN ' + quote(self.params.min) + ' AND ' + quote(self.params.max);
 		},
 		toMongoQuery: function(keyPrefix) {
 			var obj = {
 				'$and': [{}, {}]
 			};
-			var allKey = keyPrefix + '.' + this.contextKey.replace(this.Context.getDelimiter(), '.');
+			var allKey = keyPrefix + '.' + this.contextKey.replace(this.context.getDelimiter(), '.');
 			obj['$and'][0][allKey] = {
 				'$gte': this.params.min
 			};
@@ -465,7 +463,7 @@ var template = {
 	
 	truth: {
 		evaluate: function(callback) {
-			this.debug.events.push({
+			debugger.addEvent({
 				event: 'Called always true comparison - result (true)'
 			});
 			return callback(null, true);
@@ -491,7 +489,7 @@ Object.keys(template).forEach(function(key) {
 	ctor.prototype.toJSON = function() {
 		var obj = {};
 		for (var key in this) {
-			if (key !== '_Context') obj[key] = this[key];
+			if (key !== '_context') obj[key] = this[key];
 		}
 		return obj;
 	};

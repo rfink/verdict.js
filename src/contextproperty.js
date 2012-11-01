@@ -3,7 +3,7 @@ var comparisons = require('verdict/comparison');
 
 exports = module.exports = ContextProperty;
 
-/*
+/**
 
 	Example config:
 	new ContextProperty({

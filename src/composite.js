@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var async = require('async');
+var debugger = require('./debugger');
 
 var composite = exports = module.exports = {};
 
@@ -7,13 +8,10 @@ var composite = exports = module.exports = {};
  * Interface defining properties && public methods for the composite comparison objects
  * @return composite
  */
-var compositeInterface = function(children, debug) {
+var compositeInterface = function(children) {
 	this.children = children || [];
 	this.nodeType = '';
 	this.nodeDriver = '';
-	this.debug = debug || {
-		events: []
-	};
 };
 
 compositeInterface.prototype.evaluate = function(callback) {};
@@ -22,7 +20,7 @@ var template = {
 	all: {
 		evaluate: function(callback) {
 			var self = this;
-			this.debug.events.push({
+			debugger.addEvent({
 				event: 'Beginning evaluation of "AND" block'
 			});
 			async.detectSeries(this.children,
@@ -31,7 +29,7 @@ var template = {
 						if (err) return callback(err);
 						if (!result) {
 							iteratorCallback(true);
-							self.debug.events.push({
+							debugger.addEvent({
 								event: '"AND" block evaluated to false'
 							});
 							callback(null, false);
@@ -42,7 +40,7 @@ var template = {
 				},
 				function(result) {
 					if (typeof result === 'undefined') {
-						self.debug.events.push({
+						debugger.addEvent({
 							event: '"AND" block evaluated to true'
 						});
 						callback(null, true);
@@ -68,7 +66,7 @@ var template = {
 	any: {
 		evaluate: function(callback) {
 			var self = this;
-			this.debug.events.push({
+			debugger.addEvent({
 				event: 'Beginning evaluation of "OR" block'
 			});
 			async.detectSeries(this.children,
@@ -77,7 +75,7 @@ var template = {
 						if (err) return callback(err);
 						if (result) {
 							iteratorCallback(true);
-							self.debug.events.push({
+							debugger.addEvent({
 								event: '"OR" block evaluated to true'
 							});
 							callback(null, true);
@@ -88,7 +86,7 @@ var template = {
 				},
 				function(result) {
 					if (typeof result === 'undefined') {
-						self.debug.events.push({
+						debugger.addEvent({
 							event: '"OR" block evaluated to false'
 						});
 						callback(null, false);
@@ -123,7 +121,7 @@ var template = {
 						if (err) return callback(err);
 						if (result) {
 							iteratorCallback(true);
-							self.debug.events.push({
+							debugger.addEvent({
 								event: '"NONE" block evaluated to false'
 							});
 							callback(null, false);
@@ -134,7 +132,7 @@ var template = {
 				},
 				function(result) {
 					if (typeof result === 'undefined') {
-						self.debug.events.push({
+						debugger.addEvent({
 							event: '"NONE" block evaluated to true'
 						});
 						callback(null, true);

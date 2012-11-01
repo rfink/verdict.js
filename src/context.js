@@ -9,13 +9,11 @@ exports = module.exports = Context;
  * @param string delimiter
  * @return Context
  */
-function Context(data, delimiter, debug) {
-	this.data = {};
-	if (data) this.populate(data);
+function Context(model, contextData, delimiter) {
+	if (!(this instanceof Context)) return new Context(model, contextData, delimiter);
+	this.data = model || {};
+	if (contextData) this.mergeInto(this.data, contextData);
 	this._delimiter = delimiter || '::';
-	this.debug = debug || {
-		events: []
-	};
 }
 
 /**
@@ -106,18 +104,6 @@ Context.prototype.setValue = function(name, value) {
 		if (typeof _d[k] === 'undefined') _d[k] = {};
 		_d = _d[k];
 	}
-};
-
-/**
- * Populate our data with an object
- * @param object data
- * @return Context
- */
-Context.prototype.populate = function(data) {
-	for (var k in data) {
-		this.setValue(k, data[k]);
-	}
-	return this;
 };
 
 /**
