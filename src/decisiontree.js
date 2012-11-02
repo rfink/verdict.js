@@ -42,7 +42,7 @@ DecisionTree.prototype.getLeafNode = function(cb) {
     var path = [];
     return (function getLeaf(callback, self) {
         debug.addEvent({
-            event: 'Evaluated segment (' + this.nodeName + ')'
+            event: 'Evaluated segment (' + this.segmentName + ')'
         });
         self.evaluateCondition(function(err, pass) {
             if (err) return callback(err);
@@ -72,6 +72,36 @@ DecisionTree.prototype.getLeafNode = function(cb) {
                     callback(null, null);
                 }
             });
+        });
+    })(cb, this);
+};
+
+/**
+ * Evaluate our conditions and return all available matches
+ * @param  {Function} cb
+ * @return {array}
+ */
+DecisionTree.prototype.executeAll = function(cb) {
+    var decisions = [];
+    return (function getLeaves(callback, self) {
+        self.evaluateCondition(function(err, pass) {
+            if (err) return callback(err);
+            if (!pass) return;
+            if (self.isLeafNode()) {
+                decisions.push(self);
+            }
+            async.detectSeries(
+                self.children,
+                function(child, iteratorCallback) {
+                    getLeaves(function(err, result) {
+                        if (err) return callback(err);
+                        iteratorCallback(false);
+                    }, child);
+                },
+                function(res) {
+                    return callback(null, decisions);
+                }
+            );
         });
     })(cb, this);
 };
