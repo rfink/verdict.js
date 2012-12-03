@@ -4,6 +4,7 @@ var verdict = exports = module.exports = {};
 verdict.comparison = require('./src/comparison');
 verdict.composite = require('./src/composite');
 verdict.factory = require('./src/factory');
+verdict.debug = require('./src/debug');
 verdict.util = require('./src/util');
 verdict.Context = require('./src/context');
 verdict.DecisionTree = require('./src/decisiontree');

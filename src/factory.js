@@ -7,7 +7,8 @@ var verdict = require('verdict');
  * @param object dataStructure
  * @return verdict
  */
-var factory = function(contextData, dataStructure, debug) {
+var factory = function(contextData, dataStructure, options) {
+	var options = options || {};
 	if (dataStructure === null || typeof dataStructure === 'undefined') return new verdict.comparison.truth(contextData);
 	if (!dataStructure.nodeType) return null;
 	var nodeType = dataStructure.nodeType.toLowerCase();
@@ -15,13 +16,13 @@ var factory = function(contextData, dataStructure, debug) {
 		case 'composite':
 			var children = [];
 			dataStructure.children.forEach(function(child) {
-				children.push(factory(contextData, child, debug));
+				children.push(factory(contextData, child, options));
 			});
-			return new verdict.composite[dataStructure['nodeDriver']](children, debug);
+			return new verdict.composite[dataStructure['nodeDriver']](children);
 			break;
 		case 'comparison':
-			var cfgVal = (typeof dataStructure.configValue === 'string') ? dataStructure.configValue.toLowerCase() : dataStructure.configValue;
-			var ret = new verdict.comparison[dataStructure['nodeDriver']](contextData, dataStructure.contextKey, cfgVal, debug);
+			var cfgVal = (typeof dataStructure.configValue === 'string' && !options.caseSensitive) ? dataStructure.configValue.toLowerCase() : dataStructure.configValue;
+			var ret = new verdict.comparison[dataStructure['nodeDriver']](contextData, dataStructure.contextKey, cfgVal);
 			ret.params = dataStructure.params || {};
 			return ret;
 			break;

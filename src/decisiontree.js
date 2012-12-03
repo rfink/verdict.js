@@ -12,7 +12,7 @@ exports = module.exports = DecisionTree;
  * @return {DecisionTree}
  */
 function DecisionTree(condition) {
-    if (!(this instanceof DecisionTree)) return new DecisionTree(condition, debug);
+    if (!(this instanceof DecisionTree)) return new DecisionTree(condition);
     this.children = [];
     this.parent = null;
     this.segmentName = null;
