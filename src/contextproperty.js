@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var comparisons = require('verdict/comparison');
+var comparisons = require('./comparison');
 
 exports = module.exports = ContextProperty;
 
