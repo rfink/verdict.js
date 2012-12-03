@@ -3,7 +3,8 @@ var debugEvents = [];
 exports = module.exports = {
 
 	addEvent: function(event) {
-		debugEvents.push(event);
+		// TODO: This should work at an instance level, but I don't want to pass it around everywhere.  Hmmmmmmm
+		//debugEvents.push(event);
 	},
 
 	clearEvents: function() {

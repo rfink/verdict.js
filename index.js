@@ -10,4 +10,3 @@ verdict.Context = require('./src/context');
 verdict.DecisionTree = require('./src/decisiontree');
 verdict.ContextProperty = require('./src/contextproperty');
 verdict.ComparisonParameter = require('./src/comparisonparameter');
-
