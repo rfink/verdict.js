@@ -18,6 +18,7 @@ function DecisionTree(condition) {
     this.segmentName = null;
     this.segmentId = null;
     this.condition = condition;
+    this.payload = {};
 }
 
 /**
@@ -295,6 +296,7 @@ DecisionTree.prototype.breadthFirstToArray = function() {
 DecisionTree.factory = function(dataObject, contextObject) {
     var Dec = new DecisionTree(verdict.factory(contextObject, dataObject.condition));
     Dec.segmentName = dataObject.segmentName;
+    Dec.payload = dataObject.payload;
     if (dataObject.segmentId) Dec.segmentId = dataObject.segmentId;
     // Recurse with factory, if needed
     if (dataObject.children) {
@@ -316,6 +318,7 @@ DecisionTree.prototype.toJSON = function() {
         children: this.children,
         segmentName: this.segmentName,
         segmentId: this.segmentId,
-        condition: this.condition
+        condition: this.condition,
+        payload: this.payload
     };
 };
