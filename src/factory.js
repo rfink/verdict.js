@@ -21,7 +21,7 @@ var factory = function(contextData, dataStructure, options) {
 			return new verdict.composite[dataStructure['nodeDriver']](children);
 			break;
 		case 'comparison':
-			var cfgVal = (typeof dataStructure.configValue === 'string' && !options.caseSensitive) ? dataStructure.configValue.toLowerCase() : dataStructure.configValue;
+			var cfgVal = (typeof dataStructure.configValue === 'string' && !+options.caseSensitive) ? dataStructure.configValue.toLowerCase() : dataStructure.configValue;
 			var ret = new verdict.comparison[dataStructure['nodeDriver']](contextData, dataStructure.contextKey, cfgVal);
 			ret.params = dataStructure.params || {};
 			return ret;
