@@ -1,4 +1,12 @@
+/**
+ * Utility methods for verdict and applications using verdict
+ */
 exports = module.exports = {
+
+    /**
+     * Take an object and recursively turn its strings into lower case
+     */
+
     toLowerRecursive: (function toLowerRecursive(obj) {
         if (Array.isArray(obj)) {
             var ret = [];
@@ -25,10 +33,51 @@ exports = module.exports = {
         }
         return ret;
     }),
+
+    /**
+     * Format a given date string for mysql
+     */
+
     formatForMysql: function(dt) {
         if (!dt) return null;
         var myDate = new Date(Date.parse(dt));
         return myDate.getFullYear() + '-' + (myDate.getMonth() + 1) + '-' + myDate.getDate() + ' '
                 + myDate.getHours() + ':' + myDate.getMinutes() + ':' + myDate.getSeconds();
+    },
+
+    /**
+     * Format a given input value for a mongo query, using the given type
+     */
+
+    mongoFormatValue: function(input, propType) {
+        var prop = context.getProperty(propertyName);
+        if (!prop) return null;
+        if (propType === Number) {
+            return +input;
+        } else if (propType === Boolean) {
+            if (input === '0') {
+                return false;
+            }
+            return !!input;
+        } else if (propType === String && input !== null && input !== undefined) {
+            return input.toString();
+        }
+        return input;
+    },
+
+    /**
+     * Convert a string to the type constructor and return
+     */
+    typeStringToConstructor: function(typeString) {
+        switch (typeString) {
+            case 'Date': return Date;
+            case 'Number': return Number;
+            case 'Array': return Array;
+            case 'Boolean': return Boolean;
+            // Break intentionally ommitted
+            case 'String':
+            default: return String;
+        }
     }
+
 };

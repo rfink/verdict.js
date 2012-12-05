@@ -1,4 +1,5 @@
 var ComparisonParameter = require('./comparisonparameter');
+var util = require('./util');
 var debug = require('./debug');
 
 /**
@@ -40,18 +41,12 @@ var quote = function(input) {
 	}
 };
 
+/**
+ * Shortcut to getting the mongo formatted value given the context and property name
+ */
 var mongoFormatValue = function(input, context, propertyName) {
 	var prop = context.getProperty(propertyName);
-	if (!prop) return null;
-	if (prop.options.type === Number) {
-		return parseFloat(input);
-	} else if (prop.options.type === Boolean) {
-		if (input === '0') {
-			return false;
-		}
-		return !!input;
-	}
-	return input;
+	return verdict.util.mongoFormatValue(input, prop.options.type);
 };
 
 var regExEscape = function(str) {
