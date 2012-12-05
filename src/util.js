@@ -50,8 +50,6 @@ exports = module.exports = {
      */
 
     mongoFormatValue: function(input, propType) {
-        var prop = context.getProperty(propertyName);
-        if (!prop) return null;
         if (propType === Number) {
             return +input;
         } else if (propType === Boolean) {
