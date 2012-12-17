@@ -291,17 +291,18 @@ DecisionTree.prototype.breadthFirstToArray = function() {
  * Static creator method
  * @param  {object} dataObject
  * @param  {object} contextObject
+ * @param  {object} options
  * @return {DecisionTree}
  */
-DecisionTree.factory = function(dataObject, contextObject) {
-    var Dec = new DecisionTree(verdict.factory(contextObject, dataObject.condition));
+DecisionTree.factory = function(dataObject, contextObject, options) {
+    var Dec = new DecisionTree(verdict.factory(contextObject, dataObject.condition, options));
     Dec.segmentName = dataObject.segmentName;
     Dec.payload = dataObject.payload;
     if (dataObject.segmentId) Dec.segmentId = dataObject.segmentId;
     // Recurse with factory, if needed
     if (dataObject.children) {
         dataObject.children.forEach(function(child) {
-            var chd = DecisionTree.factory(child, contextObject);
+            var chd = DecisionTree.factory(child, contextObject, options);
             chd.parent = Dec;
             Dec.children.push(chd);
         });
