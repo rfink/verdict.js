@@ -1,0 +1,43 @@
+{
+  "name": "verdict.js",
+  "version": "0.0.0",
+  "description": "Verdict rule composition with nesting",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "mocha --require should --timeout=5000 test/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rfink/verdict.js"
+  },
+  "keywords": [
+    "rule",
+    "rules",
+    "engine",
+    "builder",
+    "boolean",
+    "condition"
+  ],
+  "author": "Ryan Fink <ryanjfink@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rfink/verdict.js/issues"
+  },
+  "homepage": "https://github.com/rfink/verdict.js",
+  "devDependencies": {
+    "grunt": "0.4.5",
+    "grunt-browserify": "3.0.1",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-contrib-concat": "0.5.0",
+    "grunt-contrib-jshint": "0.10.0",
+    "grunt-contrib-uglify": "0.6.0",
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-karma": "0.9.0",
+    "karma": "0.12.23",
+    "mocha": "1.21.4",
+    "should": "4.0.4"
+  },
+  "dependencies": {
+    "selectn": "^0.9.6"
+  }
+}
