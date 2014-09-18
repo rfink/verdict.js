@@ -28,16 +28,14 @@
     "grunt": "0.4.5",
     "grunt-browserify": "3.0.1",
     "grunt-contrib-clean": "0.6.0",
-    "grunt-contrib-concat": "0.5.0",
     "grunt-contrib-jshint": "0.10.0",
     "grunt-contrib-uglify": "0.6.0",
-    "grunt-contrib-watch": "0.6.1",
-    "grunt-karma": "0.9.0",
-    "karma": "0.12.23",
+    "load-grunt-tasks": "0.6.0",
     "mocha": "1.21.4",
+    "require-grunt-configs": "0.5.0",
     "should": "4.0.4"
   },
   "dependencies": {
-    "selectn": "^0.9.6"
+    "selectn": "0.9.6"
   }
 }
