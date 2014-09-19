@@ -10,6 +10,15 @@ composite capabilities.  Browser-friendly.  The segmentation tree capabilities h
 dropped and may be available in a separate module with this as a dependency, but are
 not baked in.  For now.
 
+Installation
+=====================
+
+```
+
+npm install verdict.js
+
+```
+
 Usage
 ==========
 
