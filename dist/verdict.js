@@ -1,4 +1,5 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.verdict=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var weighted = require('weighted');
 
 /**
  * Just check if a exists, aka is a non empty value
@@ -114,8 +115,36 @@ exports.inRange = function inRange(a, b) {
 /**
  * Check if value is *not* in a range
  */
-exports.notInRange = function notInRange(a, b) {
+exports.ninRange = function ninRange(a, b) {
   return a < b[0] || a > b[1];
+};
+
+/**
+ * Check if value is evenly divisible by
+ */
+exports.divisibleBy = function divisibleBy(a, b) {
+  return a % b === 0;
+};
+
+/**
+ * Check if value is *not* evenly divisible by
+ */
+exports.ndivisibleBy = function ndivisibleBy(a, b) {
+  return a % b !== 0;
+};
+
+/**
+ * Check if probability of weight fits (TODO: Desc and name)
+ */
+exports.weight = function weight(a, b) {
+  return weighted([true, false], [b, 1 - b]);
+};
+
+/**
+ * Check if probability of weight *not* fits (TODO: Desc and name)
+ */
+exports.nweight = function nweight(a, b) {
+  return weighted([false, true], [b, 1 - b]);
 };
 
 /**
@@ -133,7 +162,7 @@ exports.compile = function compile(a, b) {
   return compiler();
 };
 
-},{}],2:[function(require,module,exports){
+},{"weighted":6}],2:[function(require,module,exports){
 
 /**
  * Check if any of the given rules are valid
@@ -246,7 +275,8 @@ Ruleset.prototype.add = function add(rule) {
 /**
  * Turn the given JSON object into a verdict
  */
-Ruleset.prototype.parse = function parse(json) {
+Ruleset.prototype.parse =
+Ruleset.parse = function parse(json) {
   var obj = null;
   var i = null;
   var len = null;
@@ -255,17 +285,15 @@ Ruleset.prototype.parse = function parse(json) {
     throw new Error('JSON cannot be empty');
   }
 
-  obj = new Ruleset();
-
   if (!json.rules) {
-    obj.rules.push(new Rule(json));
-    return obj;
+    return new Rule(json);
   }
 
+  obj = new Ruleset();
   obj.composite = json.composite || obj.composite;
 
   for (i = 0, len = json.rules.length; i < len; ++i) {
-    obj.rules.push(this.parse(json.rules[i]));
+    obj.rules.push(parse(json.rules[i]));
   }
 
   return obj;
@@ -307,7 +335,6 @@ for (key in comparators) {
 }
 
 },{"./comparison":1,"./composite":2,"./rule":4}],4:[function(require,module,exports){
-
 var selectn = require('selectn');
 var comparators = require('./comparison');
 
@@ -406,6 +433,103 @@ function selectn(query) {
        : accessor;
 }
 
+
+},{}],6:[function(require,module,exports){
+module.exports = require('./lib/weighted')
+
+},{"./lib/weighted":7}],7:[function(require,module,exports){
+function getTotal(weights) {
+  var total = weights.__weighted_total
+
+  if (total != null) {
+    return total
+  }
+
+  function wrap(arr, fn) {
+    return function () {
+      arr.__weighted_total = null
+      fn.apply(arr, arguments)
+    }
+  }
+
+  if (total === undefined) {
+    ;['pop', 'push', 'shift', 'unshift', 'splice'].forEach(function (key) {
+      weights[key] = wrap(weights, weights[key])
+    })
+  }
+
+  total = weights.__weighted_total = weights.reduce(function (prev, curr) {
+    return prev + curr
+  }, 0)
+
+  return total
+}
+
+function _selectArr(set, weights, options) {
+  if (typeof options.rand !== 'function') {
+    options.rand = Math.random
+  }
+
+  if (set.length !== weights.length) {
+    throw new Error('Different number of options & weights.')
+  }
+
+  var total = options.total || (options.normal ? 1 : getTotal(weights))
+    , key = options.rand() * total
+    , index = 0
+
+  for (;index < weights.length; index++) {
+    key -= weights[index]
+
+    if (key < 0) {
+      return set[index]
+    }
+  }
+
+  throw new Error('All weights do not add up to >= 1 as expected.')
+}
+
+function _selectObj(obj, options) {
+  var keys = Object.keys(obj)
+    , values = keys.map(function (key) {
+        return obj[key]
+      })
+
+  return _selectArr(keys, values, options)
+}
+
+function select(set, weights, options) {
+  if (typeof options === 'function') {
+    options = {
+      rand: options
+    }
+  }
+
+  if (options == null) {
+    options = {}
+  }
+
+  if (Array.isArray(set)) {
+    if (Array.isArray(weights)) {
+      if (set.length === weights.length) {
+        return _selectArr(set, weights, options)
+      }
+
+      throw new Error('Set and Weights are different sizes.')
+    }
+
+    throw new Error('Set is an Array, and Weights is not.')
+  }
+
+  if (typeof set === 'object') {
+    return _selectObj(set, weights || options)
+  }
+
+  throw new Error('Set is not an Object, nor is it an Array.')
+}
+
+module.exports = select
+module.exports.select = select
 
 },{}]},{},[3])(3)
 });

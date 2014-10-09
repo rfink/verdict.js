@@ -23,6 +23,7 @@ describe('Comparison test', function() {
       comparators.neq('1', 1).should.equal(false);
     });
   });
+
   describe('Identity/Negative Identity', function() {
     it('should compare identity true correctly', function() {
       comparators.is(1, 1).should.equal(true);
@@ -40,6 +41,7 @@ describe('Comparison test', function() {
       comparators.not(1, 1).should.equal(false);
     });
   });
+
   describe('GT/LT/GTE/LTE', function() {
     it('should compare gt true correctly', function() {
       comparators.gt(1, 0).should.equal(true);
@@ -66,6 +68,7 @@ describe('Comparison test', function() {
       comparators.lte(1, 0).should.equal(false);
     });
   });
+
   describe('Range/Negative Range', function() {
     it('should compare range true correctly', function() {
       comparators.inRange(3, [0, 4]).should.equal(true);
@@ -74,12 +77,13 @@ describe('Comparison test', function() {
       comparators.inRange(5, [0, 4]).should.equal(false);
     });
     it('should compare neg range true correctly', function() {
-      comparators.notInRange(3, [4, 6]).should.equal(true);
+      comparators.ninRange(3, [4, 6]).should.equal(true);
     });
     it('should compare neg range false correctly', function() {
-      comparators.notInRange(3, [0, 4]).should.equal(false);
+      comparators.ninRange(3, [0, 4]).should.equal(false);
     });
   });
+
   describe('Compiler', function() {
     it('should compare compile true correctly', function() {
       comparators.compile(null, '1 == 1').should.equal(true);
@@ -88,6 +92,7 @@ describe('Comparison test', function() {
       comparators.compile(null, '1 == 2').should.equal(false);
     });
   });
+
   describe('RegEx/Negative RegEx', function() {
     it('should compare match true correctly', function() {
       comparators.matches('meh', /^meh$/).should.equal(true);
@@ -102,6 +107,7 @@ describe('Comparison test', function() {
       comparators.nmatches('beh', /^beh$/).should.equal(false);
     });
   });
+
   describe('Contains/NContains', function() {
     it('should compare contains true correctly', function() {
       comparators.contains('meh', 'eh').should.equal(true);
@@ -114,6 +120,36 @@ describe('Comparison test', function() {
     });
     it('should compare neg contains false correctly', function() {
       comparators.ncontains('beh', 'eh').should.equal(false);
+    });
+  });
+
+  describe('DivisibleBy/NDivisibleBy', function() {
+    it('should compare divisbleBy true correctly', function() {
+      comparators.divisibleBy(9, 3).should.equal(true);
+    });
+    it('should compare divisibleBy false correctly', function() {
+      comparators.divisibleBy(9, 4).should.equal(false);
+    });
+    it('should compare ndivisbleBy true correctly', function() {
+      comparators.ndivisibleBy(9, 4).should.equal(true);
+    });
+    it('should compare ndivisibleBy false correctly', function() {
+      comparators.ndivisibleBy(9, 3).should.equal(false);
+    });
+  });
+
+  describe('Weighted/NWeighted', function() {
+    it('should weighted true correctly', function() {
+      comparators.weight(null, 1).should.equal(true);
+    });
+    it('should weighted false correctly', function() {
+      comparators.weight(null, 0).should.equal(false);
+    });
+    it('should nweighted true correctly', function() {
+      comparators.nweight(null, 0).should.equal(true);
+    });
+    it('should nweighted false correctly', function() {
+      comparators.nweight(null, 1).should.equal(false);
     });
   });
 });

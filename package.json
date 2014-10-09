@@ -36,6 +36,7 @@
     "should": "4.0.4"
   },
   "dependencies": {
-    "selectn": "0.9.6"
+    "selectn": "0.9.6",
+    "weighted": "0.2.2"
   }
 }
