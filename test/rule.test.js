@@ -31,4 +31,14 @@ describe('Rule test', function() {
     theRule = rule(payload);
     theRule.test(context).should.equal(false);
   });
+
+  it('should compile a rule with a missing context property', function() {
+    var payload = {};
+    var theRule;
+    payload.path = 'a.b.doesNotExist';
+    payload.comparator = 'contains';
+    payload.value = 'wat';
+    theRule = rule(payload);
+    theRule.test(context).should.equal(false);
+  });
 });

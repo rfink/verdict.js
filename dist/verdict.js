@@ -357,7 +357,7 @@ function Rule(rule) {
  *   we will pass the results to that async-style
  */
 Rule.prototype.test = function test(context) {
-  var val = selectn(this.path, context);
+  var val = selectn(this.path, context) || '';
   var comparator = comparators[this.comparator];
 
   if (!comparator) {
