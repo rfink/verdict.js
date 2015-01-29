@@ -152,4 +152,39 @@ describe('Comparison test', function() {
       comparators.nweight(null, 1).should.equal(false);
     });
   });
+
+  describe('Version comparisons', function() {
+    it('should compare equal versions true correctly', function() {
+      comparators.eqVersion('1.11.0', '1.11.0').should.equal(true);
+    });
+    it('should compare equal versions false correctly', function() {
+      comparators.eqVersion('1.11.0', '1.11.1').should.equal(false);
+    });
+    it('should compare gt versions true correctly', function() {
+      comparators.gtVersion('1.2.0', '1.11.0').should.equal(true);
+    });
+    it('should compare gt versions false correctly', function() {
+      comparators.gtVersion('1.11.0', '1.2.0').should.equal(false);
+    });
+    it('should compare gte versions true correctly', function() {
+      comparators.gteVersion('1.2.0', '1.11.0').should.equal(true);
+      comparators.gteVersion('1.2.0', '1.2.0').should.equal(true);
+    });
+    it('should compare gte versions false correctly', function() {
+      comparators.gteVersion('1.11.0', '1.2.0').should.equal(false);
+    });
+    it('should compare lt versions true correctly', function() {
+      comparators.ltVersion('1.11.0', '1.2.0').should.equal(true);
+    });
+    it('should compare lt versions false correctly', function() {
+      comparators.ltVersion('1.2.0', '1.11.0').should.equal(false);
+    });
+    it('should compare lte versions true correctly', function() {
+      comparators.lteVersion('1.11.0', '1.2.0').should.equal(true);
+      comparators.lteVersion('1.2.0', '1.2.0').should.equal(true);
+    });
+    it('should compare lte versions false correctly', function() {
+      comparators.lteVersion('1.2.0', '1.11.0').should.equal(false);
+    });
+  });
 });

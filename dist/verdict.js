@@ -1,5 +1,6 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.verdict=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var weighted = require('weighted');
+var versionCompare = require('version-compare.js');
 
 /**
  * Just check if a exists, aka is a non empty value
@@ -148,6 +149,43 @@ exports.nweight = function nweight(a, b) {
 };
 
 /**
+ * Use software version logic, compare a to b and check for equality
+ */
+exports.eqVersion = function eqVersion(a, b) {
+  return !versionCompare(a, b);
+};
+
+/**
+ * Check if version a is greater than version b
+ */
+exports.gtVersion = function gtVersion(a, b) {
+  return versionCompare(a, b) === -1;
+};
+
+/**
+ * Check if version a is greater or equal to than version b
+ */
+exports.gteVersion = function gteVersion(a, b) {
+  var cmp = versionCompare(a, b);
+  return cmp === 0 || cmp === -1;
+};
+
+/**
+ * Check if version a is less than version b
+ */
+exports.ltVersion = function ltVersion(a, b) {
+  return versionCompare(a, b) === 1;
+};
+
+/**
+ * Check if version a is less than or equal to version b
+ */
+exports.lteVersion = function lteVersion(a, b) {
+  var cmp = versionCompare(a, b);
+  return cmp === 0 || cmp === 1;
+};
+
+/**
  * Compile manual javascript with variable replacement ( {var.name} )
  */
 exports.compile = function compile(a, b) {
@@ -162,7 +200,7 @@ exports.compile = function compile(a, b) {
   return compiler();
 };
 
-},{"weighted":6}],2:[function(require,module,exports){
+},{"version-compare.js":6,"weighted":7}],2:[function(require,module,exports){
 
 /**
  * Check if any of the given rules are valid
@@ -435,9 +473,43 @@ function selectn(query) {
 
 
 },{}],6:[function(require,module,exports){
+'use strict';
+
+/**
+ * Compare semver version numbers
+ *
+ * @param {String} a
+ * @param {String} b
+ * @api public
+ */
+
+module.exports = function versionCompare(a, b) {
+  var i;
+  var len;
+  
+  if (typeof a + typeof b !== 'stringstring') {
+    return false;
+  }
+  
+  a = a.split('.');
+  b = b.split('.');
+  len = Math.max(a.length, b.length);
+  
+  for (i = 0; i < len; i++) {
+    if ((a[i] && !b[i] && parseInt(a[i]) > 0) || (parseInt(a[i]) > parseInt(b[i]))) {
+      return 1;
+    } else if ((b[i] && !a[i] && parseInt(b[i]) > 0) || (parseInt(a[i]) < parseInt(b[i]))) {
+      return -1;
+    }
+  }
+  
+  return 0;
+};
+
+},{}],7:[function(require,module,exports){
 module.exports = require('./lib/weighted')
 
-},{"./lib/weighted":7}],7:[function(require,module,exports){
+},{"./lib/weighted":8}],8:[function(require,module,exports){
 function getTotal(weights) {
   var total = weights.__weighted_total
 

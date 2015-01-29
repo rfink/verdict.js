@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "selectn": "0.9.6",
+    "version-compare.js": "0.0.0",
     "weighted": "0.2.2"
   }
 }
