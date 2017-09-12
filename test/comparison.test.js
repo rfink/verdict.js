@@ -49,7 +49,8 @@ describe('Comparison test', function() {
     it('should compare negative identity false correctly, values', function() {
       comparators.not(1, 1).should.equal(false);
     });
-    it('should handle empty values when processing negative identity', function() {
+    it('should handle empty values for negative identity', function() {
+
       comparators.not(undefined, 1).should.equal(true);
     });
   });

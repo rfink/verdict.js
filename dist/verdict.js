@@ -40,14 +40,14 @@ exports.nmatches = function nmatches(a, b) {
  * String contains
  */
 exports.contains = function contains(a, b) {
-  return !!~a.indexOf(b);
+  return 'string' === typeof a && !!~a.indexOf(b);
 };
 
 /**
  * String *not* contains
  */
 exports.ncontains = function ncontains(a, b) {
-  return !~a.indexOf(b);
+  return 'string' !== typeof a || !~a.indexOf(b);
 };
 
 /**
@@ -152,7 +152,7 @@ exports.nweight = function nweight(a, b) {
  * Use software version logic, compare a to b and check for equality
  */
 exports.eqVersion = function eqVersion(a, b) {
-  return !versionCompare(a, b);
+  return versionCompare(a, b) === 0;
 };
 
 /**
