@@ -1,6 +1,6 @@
 {
   "name": "verdict.js",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Verdict rule composition with nesting",
   "main": "lib/index.js",
   "scripts": {
